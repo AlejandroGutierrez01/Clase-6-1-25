@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios';
-import Mensaje from '../componets/Alertas/mensaje';
+import Mensaje from '../componets/Alertas/Mensaje';
 
 export const Register = () => {
 
@@ -12,7 +12,6 @@ export const Register = () => {
         direccion: "",
         telefono: "",
         email: "",
-        password: ""
     })
 
     //Paso 2: guardar en el state
@@ -31,8 +30,8 @@ export const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            const url = "http://localhost:3000/api/registro"
-            const respuesta = await axios.post(url, form)
+            const url = "http://localhost:3000/api/veterinario/:id"
+            const respuesta = await axios.put(url, form)
             //Parte del paso 4
             setMensaje({respuesta:respuesta.data.msg, tipo:true})
             console.log(respuesta)
