@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import logoDog from '../assets/dog-hand.webp'
 import { Link, useParams } from 'react-router-dom'
 import axios from 'axios'
-import Mensaje from '../componets/Alertas/mensaje'
+import Mensaje from '../componets/Alertas/Mensaje'
 
 export const Confirmar = () => {
     const { token } = useParams()

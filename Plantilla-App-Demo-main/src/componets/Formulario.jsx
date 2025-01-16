@@ -2,20 +2,19 @@ import axios from 'axios'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-export const Formulario = () => {
-    
+export const Formulario = ({ paciente }) => {
+
     const navigate = useNavigate()
 
     const [form, setform] = useState({
-        nombre: "",
-        propietario: "",
-        email: "",
-        celular: "",
-        convencional: "",
-        sintomas: "",
-        salida:""
+        nombre: paciente?.nombre ?? "",
+        propietario: paciente?.propietario ?? "",
+        email: paciente?.email ?? "",
+        celular: paciente?.celular ?? "",
+        salida: new Date(paciente?.salida).toLocaleDateString('en-CA', { timeZone: 'UTC' }) ?? "",
+        convencional: paciente?.convencional ?? "",
+        sintomas: paciente?.sintomas ?? ""
     })
-
     const handleChange = (e) => {
         setform({
             ...form,
@@ -25,24 +24,47 @@ export const Formulario = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        try {
-            const token = localStorage.getItem("token")
-            const url = `http://localhost:3000/api/paciente/registro`
-            //Esto sirve para hacer peticiones a endpoints privados
-            const opcion = {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
+        //actualizar
+        if (paciente?._id) {
+            try {
+                const token = localStorage.getItem('token')
+                const url = `http://localhost:3000/api/paciente/actualizar/${paciente?._id}`
+                const options = {
+                    headers: {
+                        method: 'PUT',
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
                 }
+                await axios.put(url, form, options)
+                navigate('/dashboard/listar')
+                
+            } catch (error) {
+                console.log(error)                
             }
-            await axios.post(url, form, opcion)
-            navigate("/dashboard/listar")
-        } catch (error) {
-            console.log(error)
+        }
+        else
+        //crear
+        {
+            try {
+                const token = localStorage.getItem("token")
+                const url = `http://localhost:3000/api/paciente/registro`
+                //Esto sirve para hacer peticiones a endpoints privados
+                const opcion = {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+                await axios.post(url, form, opcion)
+                navigate("/dashboard/listar")
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
     return (
-        
+
         <form onSubmit={handleSubmit}>
             <div>
                 <label
@@ -141,7 +163,7 @@ export const Formulario = () => {
                 className='bg-gray-600 w-full p-3 
                     text-slate-300 uppercase font-bold rounded-lg 
                     hover:bg-gray-900 cursor-pointer transition-all'
-                value='Registrar' />
+                value={paciente?._id ? "Actualizar" : "Registrar"} />
 
         </form>
     )
