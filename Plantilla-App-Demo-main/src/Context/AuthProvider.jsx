@@ -7,7 +7,7 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
     const [auth, setAuth] = useState({}); // Estado para almacenar la información del usuario autenticado
 
-    // Función para obtener el perfil del usuario
+    // Función para LEER el perfil del usuario
     const perfil = async (token) => {
         try {
             const url = `http://localhost:3000/api/perfil`;
@@ -25,6 +25,22 @@ const AuthProvider = ({ children }) => {
             setAuth({}); // Limpia el estado en caso de error
         }
     };
+    const actualizarPerfil = async (datos) => {
+        try {
+            const url = `http://localhost:3000/api/veterinario/${datos.id}`
+            const options = {
+                headers: {
+                    "Content-Type":"application/json",
+                    Authorization : `Bearer ${token}`
+                }
+            }
+            const respuesta = await axios.put(url, datos, options)
+            perfil(token)
+            return {respuesta:respuesta.data.msg,tipo:true}
+        } catch (error) {
+            return {respuesta: error.response.data.msg,tipo:false}
+        }
+    }
 
     // useEffect para verificar si hay un token en localStorage al cargar la aplicación
     useEffect(() => {
@@ -39,6 +55,7 @@ const AuthProvider = ({ children }) => {
             value={{
                 auth, // Información del usuario autenticado
                 setAuth, // Permite actualizar el estado desde otros componentes
+                actualizarPerfil
             }}
         >
             {children} {/* Renderiza los componentes hijos */}

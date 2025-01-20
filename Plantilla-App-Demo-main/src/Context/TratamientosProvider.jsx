@@ -1,49 +1,113 @@
-import { createContext, useState } from "react";
-import axios from "axios";
-const tratamientosContext = createContext()
+import { createContext, useState } from "react"
+import axios from "axios"
+
+const TratamientosContext = createContext()
 
 const TratamientosProvider = ({ children }) => {
-
-    const [model, setModel] = useState(false)
+    const [modal, setModal] = useState(false)
 
     const [tratamientos, setTratamientos] = useState([])
+    const [mensaje, setMensaje] = useState({})
 
-    const handleModel = () => {
-        setModel(!model)
-    }
-    
-    const registrarTratamientos = async(datos) => {
+
+    const handleModal = () => {
+        setModal(!modal);
+    };
+
+    const registrarTratamientos = async (datos) => {
         console.log(datos)
         const token = localStorage.getItem('token')
         try {
             const url = `http://localhost:3000/api/tratamiento/registro`
-            const options={
+            const options = {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`
                 }
             }
-            const respuesta= await axios.post(url,datos,options)
-            setTratamientos([respuesta.data.tratamiento,...tratamientos])
+            const respuesta = await axios.post(url, datos, options)
+            setTratamientos([respuesta.data.tratamiento, ...tratamientos])
         } catch (error) {
             console.log(error);
         }
     }
+
+    const eliminarTratamientos = async (id) => {
+        try {
+            const confirmar = confirm("Vas a eliminar el tratamiento de un paciente, ¿Estás seguro de realizar esta acción?")
+            if (confirmar) {
+                const token = localStorage.getItem('token')
+                const url = `http://localhost:3000/api/tratamiento/${id}`
+                const options = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+                const response = await axios.delete(url, options);
+
+                const tratamientosActualizados = tratamientos.filter(tratamiento => tratamiento._id !== id)
+
+                setTratamientos(tratamientosActualizados)
+
+                setMensaje({ respuesta: response.data?.msg, tipo: true })
+                setTimeout(() => {
+                    setMensaje({})
+                }, 2000);
+            }
+        }
+        catch (error) {
+            setMensaje({ respuesta: response.data?.msg, tipo: false })
+        }
+    }
+    const cambiarTratamientos = async (id) => {
+        try {
+            const confirmar = confirm("Vas a cambiar el estado de un paciente, ¿Estás seguro de realizar esta acción?")
+            if (confirmar) {
+                const token = localStorage.getItem('token')
+                const url = `http://localhost:3000/api/tratamiento/estado/${id}`
+                const options = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+                const response = await axios.post(url,{}, options);
+
+                const tratamientosActualizados = tratamientos.filter(tratamiento => tratamiento._id !== id)
+
+                setTratamientos(tratamientosActualizados)
+
+                setMensaje({ respuesta: response.data?.msg, tipo: true })
+                setTimeout(() => {
+                    setMensaje({})
+                }, 2000);
+            }
+        }
+        catch (error) {
+            setMensaje({ respuesta: response.data?.msg, tipo: false })
+        }
+    }
+
     return (
-        <tratamientosContext.Provider value={
+        <TratamientosContext.Provider value={
             {
-                model,
-                setModel,
-                handleModel,
+                modal,
+                setModal,
+                handleModal,
                 tratamientos,
                 setTratamientos,
-                registrarTratamientos
+                registrarTratamientos,
+                eliminarTratamientos,
+                cambiarTratamientos
+
             }
         }>
             {children}
-        </tratamientosContext.Provider>
+        </TratamientosContext.Provider>
     )
 }
-
-export { TratamientosProvider }
-export default tratamientosContext
+export {
+    TratamientosProvider
+}
+export default TratamientosContext

@@ -1,16 +1,22 @@
-import { useState } from "react"
+import { useState, useContext } from "react"
 import { useParams } from "react-router-dom"
 import axios from "axios"
-
+import AuthContext from "../../Context/AuthProvider"
+import Mensaje from "../Alertas/Mensaje"
 const FormularioPerfil = () => {
+    const [mensaje, setMensaje] = useState({})
+
+    const { auth, actualizarPerfil } = useContext(AuthContext)
 
     const [form, setForm] = useState({
-        nombre: "",
-        apellido: "",
-        direccion: "",
-        telefono: "",
-        email: "",
+        id: auth._id,
+        nombre: auth.nombre || "",
+        apellido: auth.apellido || "",
+        direccion: auth.direccion || "",
+        telefono: auth.telefono || "",
+        email: auth.email || ""
     })
+
 
     //Paso 2: guardar en el state
     const handleChange = (e) => {
@@ -21,31 +27,28 @@ const FormularioPerfil = () => {
     }
 
     //Paso 3: enviar al backend
-    
-    const { id } = useParams()
+
+    const id = auth._id
     const handleSubmit = async (e) => {
         e.preventDefault()
-        try {
-            const url = `http://localhost:3000/api/veterianrio/${id}`
-            const token = localStorage.getItem("token")
-            const opcion = {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                }
-            }
-            const respuesta = await axios.put(url, form, opcion)
-            console.log(respuesta)
-
-        } catch (error) {
-            console.log(error)
+        if (Object.values(form).includes("")) {
+            setMensaje({ respuesta: "Todos los campos deben ser ingresados", tipo: false })
+            setTimeout(() => {
+                setMensaje({})
+            }, 3000);
+            return
         }
-
+        const resultado = await actualizarPerfil(form)
+        setMensaje(resultado)
+        setTimeout(() => {
+            setMensaje({})
+        }, 3000);
     }
 
-    return (
-        <form onSubmit={handleSubmit}>
 
+    return (
+        <form onSubmit={handleSubmit} >
+            {Object.keys(mensaje).length > 0 && <Mensaje tipo={mensaje.tipo}>{mensaje.respuesta}</Mensaje>}
             <div>
                 <label
                     htmlFor='nombre'
@@ -56,10 +59,11 @@ const FormularioPerfil = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='nombre'
                     name='nombre'
+                    value={form.nombre}
                     onChange={handleChange}
-                    value={form.nombre || ""}
                 />
             </div>
+
             <div>
                 <label
                     htmlFor='apellido'
@@ -70,10 +74,11 @@ const FormularioPerfil = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='apellido'
                     name='apellido'
+                    value={form.apellido}
                     onChange={handleChange}
-                    value={form.apellido || ""}
                 />
             </div>
+
             <div>
                 <label
                     htmlFor='direccion'
@@ -84,25 +89,26 @@ const FormularioPerfil = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='direccion'
                     name='direccion'
+                    value={form.direccion}
                     onChange={handleChange}
-                    value={form.direccion || ""}
                 />
             </div>
-            
+
             <div>
                 <label
                     htmlFor='telefono'
                     className='text-gray-700 uppercase font-bold text-sm'>Teléfono: </label>
                 <input
-                    id='telefono'
+                    id='ditelefonoreccion'
                     type="text"
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='telefono'
                     name='telefono'
+                    value={form.telefono}
                     onChange={handleChange}
-                    value={form.telefono || ""}
                 />
             </div>
+
             <div>
                 <label
                     htmlFor='email'
@@ -113,20 +119,8 @@ const FormularioPerfil = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='email'
                     name='email'
+                    value={form.email}
                     onChange={handleChange}
-                    value={form.email || ""}
-                />
-            </div>
-
-            <div>
-                <label
-                    htmlFor='detalles'
-                    className='text-gray-700 uppercase font-bold text-sm'>Detalles: </label>
-                <textarea
-                    id='detalles'
-                    type="text"
-                    className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
-                    name='detalles'
                 />
             </div>
 
