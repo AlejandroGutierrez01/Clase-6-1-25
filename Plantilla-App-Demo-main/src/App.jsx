@@ -17,6 +17,7 @@ import Restablecer from './paginas/Restablecer'
 import { AuthProvider } from './Context/AuthProvider'
 import { PrivateRoute } from './routes/PrivateRoutes'
 import { TratamientosProvider } from './Context/TratamientosProvider'
+import PrivateRouteWithRole from './routes/PrivateRoutesWithRole'
 
 
 
@@ -47,7 +48,11 @@ function App() {
                       <Route index element={<Perfil />} />
                       <Route path='listar' element={<Listar />} />
                       <Route path='visualizar/:id' element={<Visualizar />} />
-                      <Route path='crear' element={<Crear />} />
+                      <Route path='crear' element={
+                        <PrivateRouteWithRole>
+                          <Crear />
+                        </PrivateRouteWithRole>
+                      } />
                       <Route path='actualizar/:id' element={<Actualizar />} />
                     </Route>
                   </Routes>

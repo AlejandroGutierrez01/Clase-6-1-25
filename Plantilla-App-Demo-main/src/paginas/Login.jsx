@@ -26,7 +26,9 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            const url = 'http://localhost:3000/api/login'
+            const url = form.password.includes("vet")
+            ? `http://localhost:3000/api/paciente/login`
+            : `http://localhost:3000/api/login`
             const respuesta = await axios.post(url,form)
             localStorage.setItem("token", respuesta.data.token)
             setAuth(respuesta.data)

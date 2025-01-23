@@ -5,10 +5,10 @@ import Mensaje from '../componets/Alertas/Mensaje';
 import ModalTratamiento from '../componets/Models/ModalTratamiento';
 import TratamientosContext from '../Context/TratamientosProvider';
 import TablaTratamientos from '../componets/TablaTratamientos';
+import AuthContext from '../Context/AuthProvider';
 
 const Visualizar = () => {
-
-
+    const { auth } = useContext(AuthContext)
     const { id } = useParams()
     const [paciente, setPaciente] = useState({})
     const [mensaje, setMensaje] = useState({})
@@ -29,7 +29,7 @@ const Visualizar = () => {
                 const options = {
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization:` Bearer ${token}`
+                        Authorization: ` Bearer ${token}`
                     }
                 }
                 const respuesta = await axios.get(url, options)
@@ -92,17 +92,22 @@ const Visualizar = () => {
                                 <hr className='my-4' />
                                 <div className='flex justify-between items-center'>
                                     <p>Este submódulo te permite visualizar los tratamientos del paciente</p>
-                                    <button className="px-5 py-2 bg-green-800 text-white rounded-lg hover:bg-green-700" onClick={handleModal}>Registrar</button>
+                                    {
+                                        auth.rol === "veterinario" &&
+                                        (
+                                            <button className="px-5 py-2 bg-green-800 text-white rounded-lg hover:bg-green-700" onClick={handleModal}>Registrar</button>
+                                        )
+                                    }
                                 </div>
 
                                 {modal && (<ModalTratamiento idPaciente={paciente._id} />)
                                 }
                                 {
                                     tratamientos.length == 0
-                                    ?
-                                    <p>"NO existen registros"</p>
-                                    :
-                                    <TablaTratamientos tratamientos={tratamientos}/>
+                                        ?
+                                        <p>"NO existen registros"</p>
+                                        :
+                                        <TablaTratamientos tratamientos={tratamientos} />
                                 }
 
                             </>

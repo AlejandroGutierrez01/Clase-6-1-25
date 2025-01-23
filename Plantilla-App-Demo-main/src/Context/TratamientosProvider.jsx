@@ -15,7 +15,6 @@ const TratamientosProvider = ({ children }) => {
     };
 
     const registrarTratamientos = async (datos) => {
-        console.log(datos)
         const token = localStorage.getItem('token')
         try {
             const url = `http://localhost:3000/api/tratamiento/registro`
@@ -88,6 +87,32 @@ const TratamientosProvider = ({ children }) => {
             setMensaje({ respuesta: response.data?.msg, tipo: false })
         }
     }
+    const modificarTratamiento=async (id)=>{
+        const token = localStorage.getItem('token')
+        try {
+            const confirmar = confirm("Vas a modificar el tratamiento de un paciente, ¿Estás seguro de realizar esta acción?")
+
+            if (confirmar){ 
+                const url = `http://localhost:3000/api/tratamiento/${id}`
+                const options={
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+                const response= await axios.post(url,{},options);
+                const tratamientosActualizados = tratamientos.filter(tratamiento => tratamiento._id !== id)
+                setTratamientos(tratamientosActualizados)
+                setMensaje({ respuesta: response.data?.msg, tipo: false })
+                setTimeout(() => {
+                    setMensaje({})
+                }, 2000);
+            }
+        }
+        catch (error) {
+            setMensaje({ respuesta: response.data?.msg, tipo: false })
+        }
+    }
 
     return (
         <TratamientosContext.Provider value={
@@ -99,7 +124,8 @@ const TratamientosProvider = ({ children }) => {
                 setTratamientos,
                 registrarTratamientos,
                 eliminarTratamientos,
-                cambiarTratamientos
+                cambiarTratamientos,
+                modificarTratamiento
 
             }
         }>

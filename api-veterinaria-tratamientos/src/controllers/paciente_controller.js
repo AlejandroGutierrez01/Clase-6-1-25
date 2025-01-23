@@ -31,13 +31,14 @@ const loginPaciente = async(req,res)=>{
 
 	const {nombre,propietario,email:emailP,celular,convencional,_id} = pacienteBDD
 
-    res.status(200).json({
+   res.status(200).json({
         token,
         nombre,
         propietario,
         emailP,
         celular,
         convencional,
+        rol:"paciente",
         _id
     })
 }
@@ -70,9 +71,14 @@ const listarPacientes = async (req,res)=>{
     // Que sean solo los del paciente que inicie sesión
     // Quitar campos no necesarios 
     // Mostrar campos de documentos relacionados
-    const pacientes = await Paciente.find({estado:true}).where('veterinario').equals(req.veterinarioBDD).select("-salida -createdAt -updatedAt -__v").populate('veterinario','_id nombre apellido')
-    // Respuesta 
-    res.status(200).json(pacientes)
+    if (req.pacienteBDD && "propietario" in req.pacienteBDD){
+        const pacientes = await Paciente.find(req.pacienteBDD._id).select("-salida -createdAt -updatedAt -__v").populate('veterinario','_id nombre apellido')
+        res.status(200).json(pacientes)
+    }
+    else{
+        const pacientes = await Paciente.find({estado:true}).where('veterinario').equals(req.veterinarioBDD).select("-salida -createdAt -updatedAt -__v").populate('veterinario','_id nombre apellido')
+        res.status(200).json(pacientes)
+    }
 }
 
 
