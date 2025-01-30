@@ -44,14 +44,30 @@ const login = async(req,res)=>{
 
 
 // Método para mostrar el perfil 
-const perfil =(req,res)=>{
-    delete req.veterinarioBDD.token
-    delete req.veterinarioBDD.confirmEmail
-    delete req.veterinarioBDD.createdAt
-    delete req.veterinarioBDD.updatedAt
-    delete req.veterinarioBDD.__v
-    res.status(200).json(req.veterinarioBDD)
-}
+const perfil = (req, res) => {
+    let usuario = null;
+
+    if (req.veterinarioBDD) {
+        usuario = req.veterinarioBDD;
+        usuario.rol = "veterinario";
+    } else if (req.pacienteBDD) {
+        usuario = req.pacienteBDD;
+        usuario.rol = "paciente";
+    }
+
+    if (!usuario) {
+        return res.status(404).json({ msg: "Usuario no encontrado" });
+    }
+
+    // Eliminar datos sensibles antes de enviar la respuesta
+    delete usuario.token;
+    delete usuario.confirmEmail;
+    delete usuario.createdAt;
+    delete usuario.updatedAt;
+    delete usuario.__v;
+
+    res.status(200).json(usuario);
+};
 
 
 

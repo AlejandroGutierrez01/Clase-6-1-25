@@ -1,10 +1,13 @@
 import { useContext } from 'react'
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Link, Navigate, Outlet, useLocation } from 'react-router-dom'
 import AuthContext from '../Context/AuthProvider'
 
 const Dashboard = () => {
     const location = useLocation()
     const {auth} = useContext(AuthContext)
+    const autenticado = localStorage.getItem("token")
+    console.log(auth)
+    console.log(auth.rol)
     const urlActual = location.pathname
     return (
         <div className='md:flex md:min-h-screen'>
@@ -14,8 +17,8 @@ const Dashboard = () => {
                 <h2 className='text-4xl font-black text-center text-slate-200'>APP-DEMO</h2>
 
                 <img src="https://cdn-icons-png.flaticon.com/512/2138/2138508.png" alt="img-client" className="m-auto mt-8 p-1 border-2 border-slate-500 rounded-full" width={120} height={120} />
-                <p className='text-slate-400 text-center my-4 text-sm'> <span className='bg-green-600 w-3 h-3 inline-block rounded-full'></span> Bienvenido {auth.nombre}</p>
-                <p className='text-slate-400 text-center my-4 text-sm'> Rol - {auth?.rol}</p>
+                <p className='text-slate-400 text-center my-4 text-sm'> <span className='bg-green-600 w-3 h-3 inline-block rounded-full'></span> Bienvenido {auth.nombre || "Generico"}</p>
+                <p className='text-slate-400 text-center my-4 text-sm'> Rol - {auth?.rol || "generico"}</p>
                 <hr className="mt-5 border-slate-500" />
 
                 <ul className="mt-5">
@@ -49,7 +52,7 @@ const Dashboard = () => {
                     </div>
                 </div>
                 <div className='overflow-y-scroll p-8'>
-                    <Outlet />
+                    {autenticado ? <Outlet /> : <Navigate to="/login" /> }
                 </div>
                 <div className='bg-gray-800 h-12'>
                     <p className='text-center  text-slate-100 leading-[2.9rem] underline'>Todos los derechos reservados</p>

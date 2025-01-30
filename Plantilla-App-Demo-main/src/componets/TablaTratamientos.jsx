@@ -6,7 +6,7 @@ import AuthContext from "../Context/AuthProvider";
 
 const TablaTratamientos = ({ tratamientos }) => {
     const { auth } = useContext(AuthContext)
-    const { eliminarTratamientos, cambiarTratamientos, modificarTratamiento, modal, handleModal } = useContext(TratamientosContext)
+    const { eliminarTratamientos, cambiarTratamientos, modificarTratamiento, handleModal } = useContext(TratamientosContext)
     return (
         <table className='w-full mt-5 table-auto shadow-lg  bg-white'>
             <thead className='bg-gray-800 text-slate-400'>
