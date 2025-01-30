@@ -55,6 +55,7 @@ const verificarAutenticacion = async (req,res,next)=>{
 if(!req.headers.authorization) return res.status(404).json({msg:"Lo sentimos, debes proprocionar un token"})  
 
     // Desestructurar el token pero del headers
+    console.log(req.headers)
     const {authorization} = req.headers
 
 

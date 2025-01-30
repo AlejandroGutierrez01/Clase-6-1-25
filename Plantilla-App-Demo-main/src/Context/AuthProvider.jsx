@@ -29,6 +29,7 @@ const AuthProvider = ({ children }) => {
     
     const actualizarPerfil = async (datos) => {
         try {
+            const token = localStorage.getItem("token")
             const url = `http://localhost:3000/api/veterinario/${datos.id}`
             const options = {
                 headers: {

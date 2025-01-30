@@ -1,64 +1,68 @@
-import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import logoDog from '../assets/dog-hand.webp'
+import { Link } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify';
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
-export default function Restablecer() {
 
-    //Paso 1: Crear el useParams
-    const { token } = useParams()
-    //Paso 2: 
-    const [tokenback, setTokenback] = useState(false)
+const Restablecer = () => {
+    const { token } = useParams();
+    const [tokenback, setTokenBack] = useState(false)
+
+
+    const [form, setForm] = useState({
+        password: "",
+        confirmpassword: ""
+    })
+
+    const handleChange = (e) => {
+        setForm({
+            ...form,
+            [e.target.name]: e.target.value
+        })
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        try {
+            const url = `http://localhost:3000/api/nuevo-password/${token}`
+            const respuesta = await axios.post(url, form)
+            setForm({})
+            toast.success(respuesta.data.msg)
+            setTimeout(() => {
+                navigate('/login');
+            }, 3000);
+        } catch (error) {
+            toast.error(error.response.data.msg)
+        }
+    }
 
     const verifyToken = async () => {
         try {
-            const url = `http://localhost:3000/api/recuperar-password/${token}`
+            const url = `http://localhost:3000/api//recuperar-password/${token}`
             const respuesta = await axios.get(url)
-            setTokenback(true)
-            console.log(respuesta)
+            setTokenBack(true)
+            console.log(respuesta);
             toast.success(respuesta.data.msg)
         } catch (error) {
-            console.log(error)
+            console.log(error);
             toast.error(error.response.data.msg)
         }
     }
     useEffect(() => {
         verifyToken()
     }, [])
-    //Paso 1: crear useState
-    const [form, setForm] = useState({
-        password: "",
-        confirmarPassword: ""
-    })
-    //Paso 2: Logica para guardar en el useState
-    const handleChange = (e) => {
-        setForm(
-            {
-                ...form,
-                [e.target.name]: e.target.value
-            }
-        )
-    }
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        try {
-            const url = `${import.meta.env.LOCAL_URL}recuperar-password/${token}`
-            const respuesta = await axios.get(url, form)
-            setTokenback(true)
-            toast.success(respuesta.data.msg)
-        } catch (error) {
-            toast.error(error.response.data.msg)
-        }
-    }
+
 
     return (
-        <div>Restablecer
+
+        <div className="flex flex-col items-center justify-center">
             <ToastContainer />
             <h1 className="text-3xl font-semibold mb-2 text-center uppercase  text-gray-500">Welcome again</h1>
-      <small className="text-gray-400 block my-4 text-sm">Please enter your details</small>
-
-            {
-                tokenback &&
+            <small className="text-gray-400 block my-4 text-sm">Please enter your details</small>
+            <img className="object-cover h-80 w-80 rounded-full border-4 border-solid border-slate-600" src={logoDog} alt="image description" />
+            {tokenback &&
                 <form className='w-full' onSubmit={handleSubmit}>
                     <div className="mb-1">
                         <label className="mb-2 block text-sm font-semibold">Password</label>
@@ -79,8 +83,9 @@ export default function Restablecer() {
                         </button>
                     </div>
                 </form>
-
             }
         </div>
     )
 }
+
+export default Restablecer
