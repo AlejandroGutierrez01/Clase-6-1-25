@@ -1,4 +1,4 @@
-import { useState, useContext } from "react"
+import { useState, useContext, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import axios from "axios"
 import AuthContext from "../../Context/AuthProvider"
@@ -10,13 +10,14 @@ const FormularioPerfil = () => {
 
     const [form, setForm] = useState({
         id: auth._id,
-        nombre: auth.nombre || "",
-        apellido: auth.apellido || "",
-        direccion: auth.direccion || "",
-        telefono: auth.telefono || "",
-        email: auth.email || ""
+        nombre: ""  ,
+        apellido: "" ,
+        direccion: ""  ,
+        telefono: "" ,
+        email: "" 
     })
-
+    console.log(auth);
+    
 
     //Paso 2: guardar en el state
     const handleChange = (e) => {
@@ -45,6 +46,18 @@ const FormularioPerfil = () => {
         }, 3000);
     }
 
+    useEffect(() => {
+        setForm({
+            nombre: auth.nombre ,
+            apellido: auth.apellido,
+            direccion: auth.direccion ,
+            telefono: auth.telefono,
+            email: auth.email 
+        })
+        
+    }, [auth])
+    
+
 
     return (
         <>
@@ -60,7 +73,7 @@ const FormularioPerfil = () => {
                         className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                         placeholder='nombre'
                         name='nombre'
-                        value={form.nombre}
+                        value={form.nombre }
                         onChange={handleChange}
                     />
                 </div>
